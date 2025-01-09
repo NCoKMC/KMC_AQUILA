@@ -42,7 +42,6 @@ public class LoginController {
     }
 
     @PostMapping("/signup")
-
     public String saveUser(UserDto userVo) { // 회원 가입
         try {
         	//System.out.print(reqMap.toString());
@@ -57,7 +56,6 @@ public class LoginController {
     }
 
     @PostMapping("/auth")
-
     public String auth(UserDto userVo) { // 회원 가입
         try {
         	//System.out.print(reqMap.toString());
