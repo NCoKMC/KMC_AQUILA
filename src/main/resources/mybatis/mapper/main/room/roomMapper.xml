@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kmc.main.room.mapper.RoomMapper">
+
+    <select id="selectResveManageList" resultType="com.kmc.main.room.dto.ResveManageDto">
+
+        SELECT /*com.kmc.main.room.mapper.RoomMapper.selectResveManageList */
+        	 RESV.ROOM_NO AS roomNo
+        	,RESV.KMC_CD AS mCd
+			,RESV.START_YMD	AS startYmd
+			,RESV.END_YMD	AS endYmd
+			,TO_DATE(RESV.START_YMD,'yyyyMMdd') as startDate
+			,TO_DATE(RESV.END_YMD,'yyyyMMdd') as endDate
+			,RESV_DATE as resvDate
+			,extract ('day' from TO_DATE(resv.start_ymd,'YYYYMMDD')) as startDay
+			,extract ('day' from TO_DATE(resv.end_ymd,'YYYYMMDD')) as endDay
+		FROM KMC_RESV_MANAGE RESV
+		WHERE 1=1
+
+
+	 		<if test="startYmd != null">
+		<![CDATA[ 		AND	START_YMD <= #{endYmd} ]]>
+			</if>
+			<if test="endYmd != null">
+		<![CDATA[ 		AND END_YMD >= #{startYmd} ]]>
+			</if>
+
+
+
+			<if test="roomNo != null">
+			AND RESV.ROOM_NO = #{roomNo}
+			</if>
+			<if test="mCd != null">
+			AND RESV.KMC_CD = #{mCd}
+			</if>
+		ORDER BY RESV.ROOM_NO
+    </select>
+
+    <select id="selectRoomResveManageList" resultType="com.kmc.main.room.dto.ResveManageDto">
+
+        SELECT /*com.kmc.main.room.mapper.RoomMapper.selectRoomResveManageList */
+        	 RESV.ROOM_NO AS roomNo
+        	,RESV.KMC_CD AS mCd
+			,RESV.START_YMD	AS startYmd
+			,RESV.END_YMD	AS endYmd
+			,TO_DATE(RESV.START_YMD,'yyyyMMdd') as startDate
+			,TO_DATE(RESV.END_YMD,'yyyyMMdd') as endDate
+			,extract ('day' from TO_DATE(resv.start_ymd,'YYYYMMDD')) as startDay
+			,extract ('day' from TO_DATE(resv.end_ymd,'YYYYMMDD')) as endDay
+			,5 AS familyCnt
+		FROM KMC_RESV_MANAGE RESV
+		WHERE 1=1
+			<if test="roomNo != null">
+			AND RESV.ROOM_NO = #{roomNo}
+			</if>
+			<if test="mCd != null">
+			AND RESV.KMC_CD = #{mCd}
+			</if>
+    </select>
+
+    <select id="selectRoomResveOkList" resultType="com.kmc.main.room.dto.RoomDto">
+
+		SELECT
+			kr.ROOM_NO
+			,kr.STATUS_CD
+			,kr.USE_YN
+		 FROM KMC_ROOM kr
+			WHERE 1=1
+			AND kr.USE_YN  = 'Y'
+			AND kr.ROOM_NO NOT IN (
+			SELECT ROOM_NO  FROM KMC_RESV_MANAGE RESV
+			WHERE 1=1
+				 AND START_YMD 	<![CDATA[ <= ]]> #{endYmd}
+				 AND END_YMD 	<![CDATA[ >= ]]> #{startYmd}
+			)
+			ORDER BY kr.ROOM_NO
+    </select>
+
+    <select id="selectRoomList" resultType="com.kmc.main.room.dto.RoomDto">
+        SELECT RM.ROOM_NO AS roomNo
+		FROM KMC_ROOM RM
+
+		WHERE RM.USE_YN = 'Y'
+		ORDER BY ROOM_NO
+    </select>
+
+    <select id="selectRoomDetail" resultType="com.kmc.main.room.dto.RoomDto">
+        SELECT /*com.kmc.main.room.mapper.RoomMapper.selectRoomDetail */
+        	RM.ROOM_NO AS roomNo,
+        	RM.USE_YN	AS useYn,
+        	RM.STATUS_CD AS statusCd
+		FROM KMC_ROOM RM
+		WHERE 1=1
+		AND ROOM_NO = #{roomNo}
+
+    </select>
+
+    <select id="selectRoomCodeList" resultType="com.kmc.main.room.dto.RoomCodeDto">
+
+		SELECT
+			A.YM AS code,
+			A.YM AS value
+		 FROM
+		(
+		 SELECT
+				SUBSTRING(RESV.START_YMD,0,7)	AS YM
+			FROM KMC_RESV_MANAGE RESV
+		UNION
+			SELECT
+			 SUBSTRING(RESV.END_YMD,0,7)	AS YM
+			FROM KMC_RESV_MANAGE RESV
+		) A
+		ORDER BY A.YM DESC
+    </select>
+
+
+    <select id="selectCommonCodeList" resultType="com.kmc.main.room.dto.RoomCodeDto">
+
+
+		 SELECT
+				COM_VAL AS CODE
+				,COM_NM AS VALUE
+			FROM KMC_COM_CODE
+			WHERE COM_CD = #{comCd}
+
+
+    </select>
+
+</mapper>

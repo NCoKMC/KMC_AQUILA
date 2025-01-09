@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kmc.main.user.mapper.UserMapper">
+
+    <select id="selectUserListCnt" resultType="int">
+        SELECT COUNT(*) FROM KMC_USER_INFO
+    </select>
+
+    <select id="selectUserList" resultType="com.kmc.main.user.dto.UserDto">
+        SELECT /*com.kmc.main.user.mapper.UserMapper.selectUserList*/
+        	KMC_CD 			AS mCd
+        	, EMAIL			AS email
+        	, PHONE_NUM		AS phoneNum
+        	, USER_NM		AS userNm
+        	, COUNTRY_CD	AS countryCd
+        	, BIRTH_YMD		AS birthYmd
+        	, STATUS_CD		AS statusCd
+        	, STAY_CD		AS stayCd
+        	, KMC_CD
+
+		FROM KMC_USER_INFO
+		ORDER BY STATUS_CD ASC, REG_DATE  DESC
+    </select>
+
+    <select id="selectUserDetail" resultType="com.kmc.main.user.dto.UserDto">
+        SELECT
+        	KMC_CD 			AS mCd
+        	, EMAIL			AS email
+        	, PHONE_NUM		AS phoneNum
+        	, USER_NM		AS userNm
+        	, COUNTRY_CD	AS countryCd
+        	, BIRTH_YMD		AS birthYmd
+        	, STATUS_CD		AS statusCd
+        	, STAY_CD		AS stayCd
+        	, MARRIED_YN 	AS marriedYn
+			, SPOUSE_NM 	AS spouseNm
+			, LOCATION_NM 	AS locationNm
+			, MS1_CD AS ms1Cd
+			, MS2_CD AS ms2Cd
+			, MS3_CD AS ms3Cd
+			, MS_AGENCY_NM 			AS msAgencyNm
+			, MS_AGENCY_PHONE_NUM 	AS msAgencyPhoneNum
+			, MS_AGENCY_ADDR 		AS msAgencyAddr
+			, DISPATCH_AGENCY_CD 	AS dispatchAgencyCd
+			, DISPATCH_AGENCY_NM 	AS dispatchAgencyNm
+			, DISPATCH_DMN_NM 		AS dispatchDmnNm
+			, DISPATCH_DMN_CD 		AS dispatchDmnCd
+			, DISPATCH_CHURCH_NM 	AS dispatchChurchNm
+			, DISPATCH_AGENCY_PHONE_1_NUM 	AS dispatchAgencyPhone1Num
+			, DISPATCH_AGENCY_PHONE_2_NUM 	AS dispatchAgencyPhone2Num
+			, DISPATCH_AGENCY_ADDR 			AS dispatchAgencyAddr
+			, DISPATCH_YEAR 				AS dispatchYear
+		FROM KMC_USER_INFO
+		WHERE 1=1
+		AND KMC_CD = #{mCd}
+    </select>
+
+
+    <select id="selectUserByKmcCd" resultType="com.kmc.main.user.dto.UserDto">
+        SELECT/*com.kmc.main.user.mapper.UserMapper.selectUserByKmcCd*/
+        	KMC_CD 			AS mCd
+        	, KMC_PWD		AS password
+        	, STATUS_CD		AS statusCd
+		FROM KMC_USER_AUTH
+		WHERE 1=1
+		AND KMC_CD = #{mCd}
+    </select>
+
+    <select id="selectUserByEmail" resultType="com.kmc.main.user.dto.UserDto">
+        SELECT/*com.kmc.main.user.mapper.UserMapper.selectUserByEmail*/
+        	A.KMC_CD 			AS MCD
+        	, A.KMC_PWD		AS PASSWORD
+        	, A.STATUS_CD		AS STATUSCD
+		FROM KMC_USER_AUTH A, KMC_USER_INFO B
+		WHERE 1=1
+		AND A.KMC_CD = B.KMC_CD
+		AND B.EMAIL = #{email}
+		AND A.STATUS_CD IN ('10');
+    </select>
+
+    <!-- 회원가입 -->
+    <insert id="insertUser">
+        INSERT INTO KMC_USER_INFO(
+        KMC_CD
+
+		, EMAIL
+		, PHONE_NUM
+		, USER_NM
+		, COUNTRY_CD
+
+		) VALUES (
+			#{mCd}
+
+			, #{email}
+			, #{phoneNum}
+			, #{userNm}
+			, #{countryCd}
+
+
+		)
+    </insert>
+
+
+    <!-- 회원가입 -->
+    <insert id="insertUserAuth">
+        INSERT INTO KMC_USER_AUTH(
+        KMC_CD
+
+		, KMC_PWD
+		, STATUS_CD
+
+		) VALUES (
+			#{mCd}
+			, #{password}
+			, 'ADM'
+
+
+		)
+    </insert>
+
+     <update id="updateUserInfo" parameterType="com.kmc.main.user.dto.UserDto">
+        UPDATE KMC_USER_INFO
+        SET
+        	EMAIL = #{email},
+			PHONE_NUM = #{phoneNum},
+			USER_NM = #{userNm},
+			COUNTRY_CD = #{countryCd},
+			BIRTH_YMD = #{birthYmd},
+			STATUS_CD = #{statusCd},
+
+			MARRIED_YN = #{marriedYn},
+			SPOUSE_NM = #{spouseNm},
+			LOCATION_NM = #{locationNm},
+			MS1_CD = #{ms1Cd},
+			MS2_CD = #{ms2Cd},
+			MS3_CD = #{ms3Cd},
+			MS_AGENCY_NM = #{msAgencyNm},
+			MS_AGENCY_PHONE_NUM = #{msAgencyPhoneNum},
+			MS_AGENCY_ADDR = #{msAgencyAddr},
+			DISPATCH_AGENCY_CD = #{dispatchAgencyCd},
+			DISPATCH_AGENCY_NM = #{dispatchAgencyNm},
+			DISPATCH_DMN_NM = #{dispatchDmnNm},
+			DISPATCH_DMN_CD = #{dispatchDmnCd},
+			DISPATCH_CHURCH_NM = #{dispatchChurchNm},
+			DISPATCH_AGENCY_PHONE_1_NUM = #{dispatchAgencyPhoneNum1},
+			DISPATCH_AGENCY_PHONE_2_NUM = #{dispatchAgencyPhoneNum2},
+			DISPATCH_AGENCY_ADDR = #{dispatchAgencyAddr},
+			DISPATCH_YEAR = #{dispatchYear},
+			AGREE_YN = #{agreeYn},
+			UPD_DATE = TO_CHAR(CURRENT_DATE,'YYYYMMDD'),
+			UPD_ID = 'ADM'
+
+        WHERE KMC_CD = #{mCd}
+
+    </update>
+
+    <!-- 회원정보 수정 -->
+    <update id="updateUserPwd" parameterType="com.kmc.main.user.dto.UserDto">
+        UPDATE KMC_USER_AUTH
+        SET kmc_pwd = #{imsyPwd}
+
+        WHERE KMC_CD = #{mCd}
+
+    </update>
+
+    <!-- 탈퇴 -->
+    <update id="updateUserStatus">
+        UPDATE KMC_USER_AUTH
+        SET status_cd = #{statusCd}
+
+        WHERE KMC_CD = #{mCd}
+
+    </update>
+
+
+
+
+</mapper>

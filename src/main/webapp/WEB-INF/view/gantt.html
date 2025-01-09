@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="/gantt/gantt.css" type="text/css"/>
+        <script src="https://unpkg.com/timelines-chart"></script>
+        <script src='/gantt/random-data.js'></script>
+    </head>
+    <body>
+        <div id="chart"></div>
+       
+    	<script>
+			
+			const myData = [
+					  {
+					    group: "group1",
+					    data: [
+					      {
+					        label: "label1",
+					        data: [
+					          {
+					            timeRange: ["Jun 03 2023", "Jun 10 2023"],
+					            val: 10
+					          },
+					          {
+					            timeRange: ["Jun 13 2023", "Jun 20 2023"],
+					            val: 20
+					          }
+					        ]
+					        
+					      },
+					      {
+							  label: "label2",
+					        data: [
+					          {
+					            timeRange: ["Jun 04 2023", "Jun 11 2023"],
+					            val: 30
+					          },
+					          {
+					            timeRange: ["Jun 14 2023", "Jun 21 2023"],
+					            val: 40
+					          }
+					        ]
+						  }
+					    ]
+					  }
+				  ]
+
+    const myChart = TimelinesChart()(document.body)
+      .zScaleLabel('My Scale Units')
+      .zQualitative(false)
+      
+      .data(myData);
+		</script>
+    </body>
+</html>
